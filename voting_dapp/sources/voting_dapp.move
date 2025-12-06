@@ -41,6 +41,12 @@ public struct ProposalCreatedEvent has copy, drop {
     num_options: u64,
 }
 
+/// Creates a new voting proposal with a question and three voting options
+/// # Arguments
+/// * `question` - The question being voted on
+/// * `option1` - First voting option text
+/// * `option2` - Second voting option text
+/// * `option3` - Third voting option text
 public entry fun create_proposal(
     question: vector<u8>,
     option1: vector<u8>,
@@ -80,6 +86,10 @@ public entry fun create_proposal(
     transfer::share_object(proposal);
 }
 
+/// Cast a vote on an active proposal
+/// # Arguments
+/// * `proposal` - The voting proposal object to vote on
+/// * `choice` - The option index to vote for (0, 1, or 2)
 public entry fun cast_vote(proposal: &mut VotingProposal, choice: u64, ctx: &mut TxContext) {
     assert!(proposal.is_active, EProposalNotActive);
 
@@ -114,6 +124,9 @@ public entry fun cast_vote(proposal: &mut VotingProposal, choice: u64, ctx: &mut
     transfer::transfer(receipt, voter);
 }
 
+/// Close an active proposal to prevent further voting
+/// # Arguments
+/// * `proposal` - The voting proposal object to close
 public entry fun close_proposal(proposal: &mut VotingProposal, _ctx: &mut TxContext) {
     proposal.is_active = false;
 }

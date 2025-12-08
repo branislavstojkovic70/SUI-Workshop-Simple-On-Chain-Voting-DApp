@@ -131,6 +131,23 @@ public entry fun close_proposal(proposal: &mut VotingProposal, _ctx: &mut TxCont
     proposal.is_active = false;
 }
 
+// ====== NEW GETTER FUNCTIONS ======
+
+/// Get the proposal ID (address)
+public fun get_proposal_id(proposal: &VotingProposal): address {
+    object::uid_to_address(&proposal.id)
+}
+
+/// Get the question
+public fun get_question(proposal: &VotingProposal): vector<u8> {
+    proposal.question
+}
+
+/// Get all options
+public fun get_options(proposal: &VotingProposal): vector<vector<u8>> {
+    proposal.options
+}
+
 public fun get_vote_counts(proposal: &VotingProposal): vector<u64> {
     proposal.vote_counts
 }

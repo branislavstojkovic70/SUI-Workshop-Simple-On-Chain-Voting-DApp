@@ -12,6 +12,7 @@ const ADMIN: address = @0xAD;
 const ALICE: address = @0xA11CE;
 const BOB: address = @0xB0B;
 const CHARLIE: address = @0xCAAA; 
+
 // ============================================
 // Test 1: Create Proposal Test
 // ============================================
@@ -56,7 +57,6 @@ fun test_create_proposal() {
 fun test_cast_vote_success() {
     let mut scenario = ts::begin(ADMIN);
     
-    // Create proposal
     {
         let ctx = ts::ctx(&mut scenario);
         simple_voting::create_proposal(

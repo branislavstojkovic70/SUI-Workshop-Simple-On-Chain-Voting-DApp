@@ -1,266 +1,143 @@
-# 🗳️ Sui Voting DApp
+# Sui On-Chain Voting DApp
 
-A decentralized voting application built on the Sui blockchain that allows users to create proposals, cast votes, and view results in real-time.
+A decentralized voting application built on Sui blockchain where users can create proposals and cast votes on-chain. Features real-time results, one-vote-per-user enforcement, and proposal management.
 
-![Sui Voting DApp](https://img.shields.io/badge/Sui-Testnet-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![Sui](https://img.shields.io/badge/Sui-Testnet-blue)
+![Move](https://img.shields.io/badge/Move-Smart_Contract-orange)
+![React](https://img.shields.io/badge/React-TypeScript-blue)
 
-## 📋 Table of Contents
+## Project Overview
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Smart Contract Deployment](#smart-contract-deployment)
-- [Frontend Setup](#frontend-setup)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Smart Contract Architecture](#smart-contract-architecture)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
+This project demonstrates:
+- On-chain proposal creation and voting
+- One vote per user per proposal (enforced on-chain)
+- Real-time vote counting and results
+- Proposal lifecycle management (active/closed)
+- Modern React UI with TypeScript and Tailwind CSS
+- Event-based data fetching from blockchain
 
-## ✨ Features
+## Features
 
-- **Create Proposals**: Users can create voting proposals with a question and 3 options
-- **Cast Votes**: One vote per user per proposal with on-chain verification
-- **Real-time Results**: Live vote counts and percentages with winner highlighting
-- **Search & Filter**: Search proposals by title with pagination support
-- **Wallet Integration**: Seamless Sui wallet connection
-- **Event-Based Architecture**: Efficient data fetching using Sui events
-- **Modern UI**: Responsive Tailwind CSS design with smooth animations
-- **Vote Receipts**: NFT receipts minted for each vote cast
+- **Create Proposals**: Anyone can create voting proposals with 3 options
+- **Cast Votes**: Vote on active proposals (one vote per wallet)
+- **Real-time Results**: Live vote counts with visual progress bars
+- **Proposal Management**: Close proposals to end voting
+- **Search & Filter**: Search proposals by title
+- **Pagination**: Navigate through proposals easily
+- **Vote Receipts**: On-chain proof of voting
+- **Teal/Emerald Theme**: Modern gradient design
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
-- React + TypeScript
+- React 18
+- TypeScript
 - Vite
 - Tailwind CSS
 - @mysten/dapp-kit
 - @mysten/sui
 
 **Blockchain:**
-- Sui Move
-- Sui Testnet
+- Sui Move on Testnet
 
-## 📦 Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Sui CLI](https://docs.sui.io/build/install) (for smart contract deployment)
+- [Node.js](https://nodejs.org/) v18 or higher
+- [Sui CLI](https://docs.sui.io/build/install)
 - [Sui Wallet](https://chrome.google.com/webstore/detail/sui-wallet) browser extension
+- Testnet SUI tokens from https://faucet.sui.io/
 
-## 🚀 Installation
+## Project Structure
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/sui-voting-dapp.git
-cd sui-voting-dapp
+```
+voting/
+├── voting_dapp/                # Smart contract
+│   ├── sources/
+│   │   └── simple_voting.move # Main Move contract
+│   └── Move.toml
+│
+└── frontend/                   # React application
+    ├── src/
+    │   ├── components/
+    │   │   ├── App.tsx
+    │   │   ├── CreateProposal.tsx
+    │   │   ├── VotingProposals.tsx
+    │   │   ├── VotingResults.tsx
+    │   │   └── WalletStatus.tsx
+    │   ├── utility/
+    │   │   └── voting.ts
+    │   ├── networkConfig.ts
+    │   └── main.tsx
+    └── package.json
 ```
 
-### 2. Install Dependencies
+## Installation & Setup
+
+### 1. Clone Repository
 
 ```bash
-# Install frontend dependencies
-cd frontend
-npm install
+git clone https://github.com/yourusername/sui-voting.git
+cd sui-voting
 ```
 
-## 📝 Smart Contract Deployment
-
-### 1. Switch to Sui Testnet
-
-```bash
-sui client switch --env testnet
-```
-
-If you don't have testnet configured:
-
-```bash
-sui client new-env --alias testnet --rpc https://fullnode.testnet.sui.io:443
-sui client switch --env testnet
-```
-
-### 2. Get Testnet Tokens
-
-Get free testnet SUI tokens from the faucet:
-
-**Web Faucet:** https://faucet.sui.io/
-
-Paste your wallet address and request tokens.
-
-### 3. Build the Smart Contract
+### 2. Deploy Smart Contract
 
 ```bash
 cd voting_dapp
+
+# Switch to testnet
+sui client switch --env testnet
+
+# Build the contract
 sui move build
-```
 
-### 4. Deploy to Testnet
-
-```bash
+# Deploy to testnet
 sui client publish --gas-budget 100000000
 ```
 
-**Important:** Save the **Package ID** from the output!
+**Important:** Save the Package ID from the deployment output.
 
 Example output:
 ```
 Published Objects:
-┌──
-│ PackageID: 0xfddb89b5c3187546e3... ← COPY THIS!
-│ Version: 1
-└──
+  PackageID: 0x123abc...
 ```
 
-### 5. Verify on Sui Explorer
+Note: The contract automatically creates a sample proposal in the `init` function.
 
-Visit: https://suiscan.xyz/testnet
-
-Search for your Package ID to verify the deployment.
-
-## ⚙️ Frontend Setup
-
-### 1. Configure Network Settings
+### 3. Configure Frontend
 
 Edit `frontend/src/networkConfig.ts`:
 
 ```typescript
-import { getFullnodeUrl } from "@mysten/sui/client";
-import { createNetworkConfig } from "@mysten/dapp-kit";
-
-const { networkConfig, useNetworkVariable, useNetworkVariables } =
-  createNetworkConfig({
-    testnet: {
-      url: getFullnodeUrl("testnet"),
-      variables: {
-        packageId: "0xYOUR_PACKAGE_ID_HERE", // ← Replace with your Package ID
-      },
-    },
-  });
-
-export { useNetworkVariable, useNetworkVariables, networkConfig };
+const packageId = "YOUR_PACKAGE_ID_HERE";
 ```
 
-### 2. Install Tailwind CSS (if not already done)
+### 4. Install Dependencies & Run
 
 ```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
-
-Make sure `tailwind.config.js` exists:
-
-```javascript
-module.exports = {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: { extend: {} },
-  plugins: [],
-}
-```
-
-### 3. Start the Development Server
-
-```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-The app will be available at: `http://localhost:5173`
+Visit: `http://localhost:5173`
 
-## 🎮 Usage
+## Smart Contract Architecture
 
-### Connect Your Wallet
+### Main Structures
 
-1. Click **"Connect Wallet"** button in the top right
-2. Select your Sui wallet
-3. Approve the connection
-
-### Create a Proposal
-
-1. Fill in the **Question** field (e.g., "What's the best programming language?")
-2. Enter **Option 1** (e.g., "JavaScript")
-3. Enter **Option 2** (e.g., "Python")
-4. Enter **Option 3** (e.g., "Rust")
-5. Click **"Create Proposal"**
-6. Approve the transaction in your wallet
-7. Wait for confirmation
-
-### Vote on a Proposal
-
-1. Browse **Active Proposals** section
-2. Review the options and current vote counts
-3. Click **"Vote for Option X"** button
-4. Approve the transaction in your wallet
-5. Your vote is recorded on-chain!
-
-**Note:** You can only vote once per proposal.
-
-### Close a Proposal
-
-1. Find the proposal you want to close
-2. Click **"Close Proposal"** button
-3. Approve the transaction
-4. The proposal moves to **Voting Results** section
-
-### Search Proposals
-
-Use the search bar to filter proposals by title:
-- Type keywords in the search field
-- Results update in real-time
-- Clear search with the X button
-
-## 📁 Project Structure
-
-```
-sui-voting-dapp/
-├── voting_dapp/                 # Smart contract
-│   ├── sources/
-│   │   └── voting_dapp.move    # Main voting contract
-│   └── Move.toml
-│
-├── frontend/                    # React frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── App.tsx
-│   │   │   ├── CreateProposal.tsx
-│   │   │   ├── VotingProposals.tsx
-│   │   │   ├── VotingResults.tsx
-│   │   │   └── WalletStatus.tsx
-│   │   ├── utility/
-│   │   │   └── voting.ts       # Transaction builders
-│   │   ├── types/
-│   │   │   └── voting.ts       # TypeScript types
-│   │   ├── networkConfig.ts
-│   │   ├── main.tsx
-│   │   └── index.css
-│   ├── package.json
-│   └── vite.config.ts
-│
-└── README.md
-```
-
-## 🏗️ Smart Contract Architecture
-
-### Data Structures
-
-**VotingProposal**
 ```move
 public struct VotingProposal has key {
     id: UID,
-    question: vector<u8>,           // Question as bytes
-    options: vector<vector<u8>>,    // 3 options as bytes
-    vote_counts: vector<u64>,       // Vote count per option
-    voters: Table<address, u64>,    // Voter → choice mapping
-    is_active: bool,                // Active/closed status
-    total_votes: u64,               // Total vote count
+    question: vector<u8>,
+    options: vector<vector<u8>>,
+    vote_counts: vector<u64>,
+    voters: Table<address, u64>,
+    is_active: bool,
+    total_votes: u64,
 }
-```
 
-**VoteReceipt (NFT)**
-```move
 public struct VoteReceipt has key, store {
     id: UID,
     proposal_id: address,
@@ -270,148 +147,260 @@ public struct VoteReceipt has key, store {
 }
 ```
 
-### Main Functions
+### Key Functions
 
 **create_proposal**
-- Creates a new voting proposal
-- Emits `ProposalCreatedEvent`
-- Shares the proposal object globally
+- Create a new voting proposal with question and 3 options
+- Proposal is shared object (accessible to all)
+- Emits ProposalCreatedEvent
 
 **cast_vote**
-- Records a vote for a proposal
-- Validates: proposal is active, user hasn't voted, valid option
-- Increments vote count
-- Mints a VoteReceipt NFT
-- Emits `VoteCastEvent`
+- Vote on an active proposal
+- Enforces: one vote per address
+- Validates: proposal is active, option is valid
+- Issues VoteReceipt NFT to voter
+- Emits VoteCastEvent
 
 **close_proposal**
-- Closes a proposal to prevent further voting
-- Sets `is_active` to false
+- Mark proposal as inactive
+- Prevents further voting
+- Anyone can close any proposal
+
+**Getter Functions**
+- `get_proposal_id()` - Get proposal address
+- `get_question()` - Get question text
+- `get_options()` - Get all options
+- `get_vote_counts()` - Get vote counts
+- `get_total_votes()` - Total votes cast
+- `is_active()` - Check if active
+- `has_voted()` - Check if address voted
+- `get_user_vote()` - Get user's choice
 
 ### Error Codes
 
 ```move
-const EAlreadyVoted: u64 = 1;      // User already voted
-const EInvalidOption: u64 = 2;     // Invalid option index
-const EProposalNotActive: u64 = 3; // Proposal is closed
+const EAlreadyVoted: u64 = 1;       // User already voted
+const EInvalidOption: u64 = 2;      // Invalid option index
+const EProposalNotActive: u64 = 3;  // Proposal is closed
 ```
 
-## 🐛 Troubleshooting
+## Usage
 
-### Smart Contract Issues
+### Create a Proposal
 
-**Problem:** `Cannot find gas coin`
+1. Connect your Sui wallet
+2. Fill in the proposal question
+3. Enter three voting options
+4. Click "Create Proposal"
+5. Approve the transaction
+6. Proposal appears in Active Proposals section
+
+### Vote on a Proposal
+
+1. Browse active proposals
+2. Read the question and options
+3. Click "Vote for Option X"
+4. Approve the transaction
+5. Receive VoteReceipt NFT
+6. Results update in real-time
+
+### Close a Proposal
+
+1. Find the proposal to close
+2. Click "Close Proposal" button
+3. Approve the transaction
+4. Proposal moves to Results section
+
+### View Results
+
+1. Navigate to Voting Results section
+2. See all closed proposals
+3. Winner highlighted with star
+4. Visual breakdown of all votes
+
+## Features Explained
+
+### One Vote Per User
+
+The contract enforces one vote per wallet address using an on-chain `Table<address, u64>`. Once a user votes, they cannot vote again on the same proposal.
+
+### Vote Receipts
+
+Each vote generates a VoteReceipt NFT that:
+- Proves the user voted
+- Records their choice
+- Includes timestamp
+- Stored in user's wallet
+
+### Proposal Lifecycle
+
+1. **Created**: Anyone can create proposals
+2. **Active**: Users can vote
+3. **Closed**: No more voting, results visible
+
+### Real-time Updates
+
+The UI automatically fetches:
+- New proposals via ProposalCreatedEvent
+- Vote updates from on-chain state
+- Results from closed proposals
+
+## Enoki Gas Sponsorship (Optional)
+
+To enable gas-free transactions:
+
+### Setup
+
+1. Visit https://enoki.mystenlabs.com/
+2. Create account and new app
+3. Create Private API Key with "Sponsored Transactions" enabled
+
+### Configuration
+
+In Enoki portal, add allowed move call targets:
+```
+{PACKAGE_ID}::simple_voting::create_proposal
+{PACKAGE_ID}::simple_voting::cast_vote
+{PACKAGE_ID}::simple_voting::close_proposal
+```
+
+### Implementation
+
+Requires backend API endpoint for sponsorship. See Enoki documentation for details:
+https://docs.enoki.mystenlabs.com/
+
+Note: Enoki sponsorship is optional. The app works without it (users pay their own gas).
+
+## Sample Proposal
+
+The contract includes a fun sample proposal in the init function:
+
+**Question:** "What should we do to make people smile today?"
+
+**Options:**
+1. Help Mr. Frog find his dollar (he really needs it)
+2. Let Pim organize another overly enthusiastic adventure
+3. Just let Charlie be cynical and depressed in peace
+
+This demonstrates the voting system with a lighthearted example!
+
+## Deployment
+
+### Deploy to Vercel
+
 ```bash
-# Solution: Get more testnet tokens
-Visit: https://faucet.sui.io/
-```
-
-**Problem:** Build warnings
-```
-# These are just warnings, deployment will still work
-# The contract will function correctly
-```
-
-### Frontend Issues
-
-**Problem:** `Package ID is undefined`
-```typescript
-// Solution: Check networkConfig.ts
-// Make sure packageId is set correctly
-packageId: "0x...",  // Must start with 0x
-```
-
-**Problem:** `No proposals found`
-```
-Solutions:
-1. Check console for errors (F12)
-2. Verify Package ID is correct
-3. Create a proposal first
-4. Refresh the page
-```
-
-**Problem:** `Failed to cast vote`
-```
-Common causes:
-- Already voted on this proposal
-- Proposal is closed
-- Insufficient gas
-- Wallet not connected
-```
-
-**Problem:** Tailwind styles not working
-```bash
-# Make sure these files exist:
-# - tailwind.config.js
-# - postcss.config.js
-# - index.css starts with @tailwind directives
-
-# If not, reinstall:
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
-
-## 🌐 Deployment
-
-### Deploy Frontend to Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
 cd frontend
+npm install -g vercel
 vercel --prod
 ```
 
-### Deploy Frontend to Netlify
+Add environment variable:
+```
+VITE_PACKAGE_ID=your_package_id_here
+```
+
+### Deploy to Netlify
 
 ```bash
-# Install Netlify CLI
-npm i -g netlify-cli
-
-# Deploy
 cd frontend
+npm install -g netlify-cli
 netlify deploy --prod
 ```
 
-## 🔐 Security Considerations
+## Troubleshooting
 
-- ✅ One vote per user per proposal (enforced on-chain)
-- ✅ Vote history is immutable
-- ✅ Proposal can only be closed, not deleted
-- ✅ All transactions are transparent and verifiable
-- ⚠️ No admin controls (truly decentralized)
-- ⚠️ Proposals cannot be edited after creation
+### "Already Voted"
+**Solution:** You can only vote once per proposal. This is enforced on-chain for fairness.
 
-## 🤝 Contributing
+### "Invalid Option"
+**Solution:** You tried to vote for an option that doesn't exist. Choose option 1, 2, or 3.
 
-Contributions are welcome! Please follow these steps:
+### "Proposal Not Active"
+**Solution:** The proposal has been closed. View results in the Voting Results section.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### No Proposals Showing
+**Solutions:**
+- Verify Package ID in networkConfig.ts
+- Check contract is deployed on testnet
+- View on Sui Explorer: https://suiscan.xyz/testnet
+- Create a new proposal to test
 
-## 📄 License
+### Transaction Fails
+**Common causes:**
+- Insufficient balance (get tokens from faucet)
+- Not connected to testnet network
+- Wrong Package ID in config
 
-This project is licensed under the MIT License.
+## Verification
 
-## 🙏 Acknowledgments
+After deployment, verify on Sui Explorer:
+- Visit: https://suiscan.xyz/testnet
+- Search for your Package ID
+- View all proposals and votes
 
-- [Sui Foundation](https://sui.io/) for the blockchain platform
-- [Mysten Labs](https://mystenlabs.com/) for development tools
-- [Sui Move](https://docs.sui.io/learn/move) documentation
+## Customization
 
-## 📞 Support
+### Add More Options
 
-If you have any questions or issues:
+In `simple_voting.move`, modify `create_proposal`:
+```move
+// Add 4th option
+vector::push_back(&mut options, option4);
+vector::push_back(&mut vote_counts, 0);
+```
 
-- Open an issue on GitHub
-- Join [Sui Discord](https://discord.gg/sui)
-- Check [Sui Documentation](https://docs.sui.io/)
+Update frontend to handle 4 options.
 
----
+### Change Theme
 
-**Made with ❤️ for the Sui ecosystem**
+In components, replace color classes:
+- `teal-` with your primary color
+- `emerald-` with your accent color
+
+### Proposal Permissions
+
+To restrict proposal creation:
+```move
+// Add AdminCap in init
+public struct AdminCap has key, store { id: UID }
+
+// Require AdminCap for create_proposal
+public entry fun create_proposal(
+    _admin: &AdminCap,
+    // ... other params
+)
+```
+
+## Security & Privacy
+
+- One vote per address (enforced on-chain)
+- Votes are permanent and public
+- VoteReceipt NFT serves as proof
+- All votes visible on blockchain
+- No vote modification after submission
+- Proposal closing is unrestricted (anyone can close)
+
+## Use Cases
+
+Perfect for:
+- **DAO Governance**: Community decision making
+- **Team Polls**: Internal team voting
+- **Community Surveys**: Public opinion gathering
+- **Feature Voting**: Product roadmap decisions
+- **Event Planning**: Group activity selection
+
+## License
+
+MIT License
+
+## Acknowledgments
+
+- [Sui Foundation](https://sui.io/)
+- [Mysten Labs](https://mystenlabs.com/)
+- Inspired by Smiling Friends (sample proposal reference)
+
+## Support
+
+- [GitHub Issues](https://github.com/yourusername/sui-voting/issues)
+- [Sui Discord](https://discord.gg/sui)
+- [Sui Docs](https://docs.sui.io/)
